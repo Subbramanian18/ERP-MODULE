@@ -1,27 +1,101 @@
 const express = require("express");
 const router = express.Router();
-const {
-  createGeneral, getGeneral, getGeneralById, updateGeneral, createEmail, getEmail, getEmailById, updateEmail, createSMS, getSMS, getSMSById, updateSMS, createWhatsApp, getWhatsApp, getWhatsAppById, updateWhatsApp, createSecurity, getSecurity, getSecurityById, updateSecurity, createSystem, getSystem, getSystemById, updateSystem, createAudit, getAudit, getAuditById, updateAudit } = require("../controllers/adminController");
+const controller = require("../controllers/adminController");
 
-router.route("/general").post(createGeneral).get(getGeneral);
-router.route("/general/:id").get(getGeneralById).put(updateGeneral);
+// ---------------- GENERAL SETTINGS ----------------
+router.post("/general", controller.createGeneralSettings);
+router.get("/general/:id", controller.getGeneralSettings);
+router.put("/general/:id", controller.updateGeneralSettings);
+router.delete("/general/:id", controller.deleteGeneralSettings);
 
-router.route("/email").post(createEmail).get(getEmail);
-router.route("/email/:id").get(getEmailById).put(updateEmail);
+// ---------------- EMAIL SETTINGS ----------------
+router.post("/email", controller.createEmailSettings);
+router.get("/email/:id", controller.getEmailSettings);
+router.put("/email/:id", controller.updateEmailSettings);
+router.delete("/email/:id", async (req, res) => {
+  try {
+    const deleted = await EmailSettings.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ success: false, message: "Not found" });
+    res.json({ success: true, message: "Email settings deleted" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
 
-router.route("/sms").post(createSMS).get(getSMS);
-router.route("/sms/:id").get(getSMSById).put(updateSMS);
+// ---------------- SMS SETTINGS ----------------
+router.post("/sms", controller.createSMSSettings);
+router.get("/sms/:id", controller.getSMSSettings);
+router.put("/sms/:id", controller.updateSMSSettings);
+router.delete("/sms/:id", async (req, res) => {
+  try {
+    const deleted = await SMSSettings.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ success: false, message: "Not found" });
+    res.json({ success: true, message: "SMS settings deleted" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
 
-router.route("/whatsapp").post(createWhatsApp).get(getWhatsApp);
-router.route("/whatsapp/:id").get(getWhatsAppById).put(updateWhatsApp);
+// ---------------- WHATSAPP SETTINGS ----------------
+router.post("/whatsapp", controller.createWhatsAppSettings);
+router.get("/whatsapp/:id", controller.getWhatsAppSettings);
+router.put("/whatsapp/:id", controller.updateWhatsAppSettings);
+router.delete("/whatsapp/:id", async (req, res) => {
+  try {
+    const deleted = await WhatsAppSettings.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ success: false, message: "Not found" });
+    res.json({ success: true, message: "WhatsApp settings deleted" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
 
-router.route("/security").post(createSecurity).get(getSecurity);
-router.route("/security/:id").get(getSecurityById).put(updateSecurity);
+// ---------------- SECURITY SETTINGS ----------------
+router.post("/security", controller.createSecuritySettings);
+router.get("/security/:id", async (req, res) => {
+  try {
+    const sec = await SecuritySettings.findById(req.params.id);
+    if (!sec) return res.status(404).json({ success: false, message: "Not found" });
+    res.json({ success: true, data: sec });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+router.put("/security/:id", controller.updateSecuritySettings);
+router.delete("/security/:id", async (req, res) => {
+  try {
+    const deleted = await SecuritySettings.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ success: false, message: "Not found" });
+    res.json({ success: true, message: "Security settings deleted" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
 
-router.route("/system").post(createSystem).get(getSystem);
-router.route("/system/:id").get(getSystemById).put(updateSystem);
+// ---------------- SYSTEM SETTINGS ----------------
+router.post("/system", controller.createSystemSettings);
+router.get("/system/:id", async (req, res) => {
+  try {
+    const sys = await SystemSettings.findById(req.params.id);
+    if (!sys) return res.status(404).json({ success: false, message: "Not found" });
+    res.json({ success: true, data: sys });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+router.put("/system/:id", controller.updateSystemSettings);
+router.delete("/system/:id", async (req, res) => {
+  try {
+    const deleted = await SystemSettings.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ success: false, message: "Not found" });
+    res.json({ success: true, message: "System settings deleted" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
 
-router.route("/audit-logs").post(createAudit).get(getAudit);
-router.route("/audit-logs/:id").get(getAuditById).put(updateAudit);
+// ---------------- AUDIT LOGS ----------------
+router.post("/audit", controller.createAuditLog);
+router.get("/audit", controller.getAuditLogs);
 
 module.exports = router;
